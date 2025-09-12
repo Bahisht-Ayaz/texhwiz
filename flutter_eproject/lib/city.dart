@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_eproject/animal_shelter/shelter.dart';
 import 'package:flutter_eproject/petownwer/pets_details.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_eproject/Contactus.dart';
@@ -27,7 +28,7 @@ class _FirestoreGridViewState extends State<City> {
       if (currentUser != null) {
         String email = currentUser.email!;
         QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('User')
+            .collection('Petsowner')
             .where('Email', isEqualTo: email)
             .get();
         if (querySnapshot.docs.isNotEmpty) {
@@ -245,23 +246,23 @@ class _FirestoreGridViewState extends State<City> {
                       );
                     },
                   ),
-                  // ListTile(
-                  //   leading: Icon(Icons.rate_review, color: Colors.black),
-                  //   title:
-                  //       Text("Rate us", style: TextStyle(color: Colors.black)),
-                  //   onTap: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(builder: (context) => Rateus()),
-                  //     );
-                  //   },
-                  // ),
+                  ListTile(
+                    leading: Icon(Icons.rate_review, color: Colors.black),
+                    title:
+                        Text("shelter", style: TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Shelter()),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
 
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('City').snapshots(),
+        stream: FirebaseFirestore.instance.collection('Petsowner').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());

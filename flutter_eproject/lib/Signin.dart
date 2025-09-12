@@ -203,25 +203,31 @@ class _MyHomePageState extends State<MyHomePage> {
                     SizedBox(height: screenHeight * 0.03),
 
                     // SignUp Button
-                    ElevatedButton(
-                      onPressed: register_func,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.yellow,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.1, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                      ),
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                  ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => login()), // LoginPage open karega
+    );
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.yellow,
+    padding: EdgeInsets.symmetric(
+      horizontal: screenWidth * 0.1, vertical: 15),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(3),
+    ),
+  ),
+  child: Text(
+    'SignUp',   // Sign Up ko Login me badal diya
+    style: TextStyle(
+      color: Colors.black,
+      fontSize: screenWidth * 0.04,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
+
                   ],
                 ),
               ),
