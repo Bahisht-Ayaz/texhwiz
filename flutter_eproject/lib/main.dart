@@ -9,6 +9,8 @@ import 'package:flutter_eproject/Signin.dart';
 import 'package:flutter_eproject/city.dart';
 import 'package:flutter_eproject/login.dart';
 import 'firebase_options.dart';
+import 'package:flutter_eproject/feedback.dart';
+import 'package:flutter_eproject/Contactus.dart';
 
 void main() async {
   await Firebase.initializeApp(

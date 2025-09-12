@@ -9,21 +9,21 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const Contactus());
+  runApp(const Feedbacks());
 }
 
-class Contactus extends StatelessWidget {
-  const Contactus({super.key});
+class Feedbacks extends StatelessWidget {
+  const Feedbacks({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Contact Form',
+      title: 'Feedback Form',
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Contact Form'),
+      home: const MyHomePage(title: 'Feedback Form'),
     );
   }
 }
@@ -40,7 +40,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
-  final TextEditingController phone = TextEditingController(); // ✅ NEW
   final TextEditingController message = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -49,10 +48,9 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_formKey.currentState!.validate()) {
       try {
         FirebaseFirestore db = FirebaseFirestore.instance;
-        db.collection("Contact").add({
+        db.collection("Feedback").add({
           "Name": name.text.trim(),
           "Email": email.text.trim(),
-          "Phoneno": phone.text.trim(), // ✅ NEW
           "Message": message.text.trim(),
         });
 
@@ -61,7 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         name.clear();
         email.clear();
-        phone.clear(); // ✅ CLEAR phone
         message.clear();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -85,17 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
     final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
     if (!emailRegExp.hasMatch(value)) {
       return "Enter a valid email address";
-    }
-    return null;
-  }
-
-  String? validatePhone(String? value) { // ✅ NEW
-    if (value == null || value.trim().isEmpty) {
-      return "Phone number is required";
-    }
-    final phoneRegExp = RegExp(r'^[0-9]{10,15}$'); // 10-15 digits
-    if (!phoneRegExp.hasMatch(value)) {
-      return "Enter a valid phone number";
     }
     return null;
   }
@@ -134,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    "Contact Us Form",
+                    "Feedback Form",
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -159,14 +145,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     validator: validateEmail,
                   ),
                   const SizedBox(height: 20),
-                  buildTextField( // ✅ NEW FIELD
-                    controller: phone,
-                    hintText: "Enter Phone Number",
-                    icon: Icons.phone,
-                    obscureText: false,
-                    validator: validatePhone,
-                  ),
-                  const SizedBox(height: 20),
                   buildTextField(
                     controller: message,
                     hintText: "Enter Message",
@@ -175,6 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     validator: validateMessage,
                   ),
                   const SizedBox(height: 40),
+
                   ElevatedButton.icon(
                     onPressed: saveData,
                     style: ElevatedButton.styleFrom(
@@ -185,12 +164,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       elevation: 10,
                     ),
                     label: const Text(
-                      "Submit",
+                      "Submit Feedback",
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.lightBlue),
                     ),
-                    icon: const Icon(Icons.phone,color: Colors.lightBlue,),
+                    icon: const Icon(Icons.feedback_sharp,color: Colors.lightBlue,),
                   ),
                   const SizedBox(height: 20),
+                  
                 ],
               ),
             ),
@@ -213,7 +193,6 @@ class _MyHomePageState extends State<MyHomePage> {
         controller: controller,
         obscureText: obscureText,
         validator: validator,
-        keyboardType: hintText.contains("Phone") ? TextInputType.phone : TextInputType.text, // ✅ PHONE keyboard
         decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white.withOpacity(0.1),
