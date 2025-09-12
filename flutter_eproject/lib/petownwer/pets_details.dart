@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'firebase_options.dart';
+import 'package:flutter_eproject/city.dart';
+
+import 'package:flutter_eproject/petownwer/pshow.dart';
+import '../firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,11 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
       FirebaseFirestore db = FirebaseFirestore.instance;
       await db.collection("Pets").add({
         "Name": nameController.text,
-        "Age": ageController.number,
+        "Age": ageController.text,
         "Breed": breedController.text,
         "Gender": genderController.text,
         "Photo": photoController.text,
-
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -75,18 +77,19 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back, color: Colors.white),
-        //   onPressed: () {
-        //     Navigator.push(
-        //       context,
-        //       MaterialPageRoute(builder: (builder) => Dash()),
-        //     );
-        //   },
-        // ),
-        // backgroundColor: Color(0xFF1E88E5), // Sky green background color
-        // elevation: 4, // Adds a subtle shadow
+     appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Back arrow icon
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => City()),
+            ); // Navigate to the previous page
+          },
+        ),
+        backgroundColor: Color(0xFF1E88E5), // Sky green background color
+        elevation: 4, // Adds a subtle shadow
+        centerTitle: true, // Title aligned to the left
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -103,14 +106,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller: nameController,
                 hintText: "Enter Pet Name",
                 labelText: "Pet Name",
-                icon: Icons.location_city,
+                icon: Icons.pets,
               ),
               const SizedBox(height: 16),
               buildTextField(
                 controller: ageController,
                 hintText: "Enter Age",
                 labelText: "Age",
-                icon: Icons.number,
+                icon: Icons.calendar_month_outlined,
               ),
               const SizedBox(height: 16),
               buildTextField(
@@ -123,13 +126,13 @@ class _MyHomePageState extends State<MyHomePage> {
               buildTextField(
                 controller: genderController,
                 hintText: "Enter Gender",
-                labelText: "Breed",
-                icon: Icons.gender,
+                labelText: "Gender", // ✅ Fixed here
+                icon: Icons.person,
               ),
               const SizedBox(height: 16),
               buildTextField(
                 controller: photoController,
-                hintText: "Enter Image",
+                hintText: "Enter Image URL",
                 labelText: "Image",
                 icon: Icons.image,
               ),
@@ -155,18 +158,19 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-     floatingActionButton: FloatingActionButton(
-  onPressed: () {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (builder) => pshow()));
-  },
-  backgroundColor: Color(0xFF1E88E5), // Set button color to blue
-  child: Icon(
-    Icons.read_more,
-    color: Colors.white, // Set icon color to white
-  ),
-),
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (builder) => pshow()), // ✅ Use correct class name
+          );
+        },
+        backgroundColor: const Color(0xFF1E88E5),
+        child: const Icon(
+          Icons.read_more,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 

@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_eproject/petownwer/pets_details.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:flutter_eproject/Contactus.dart';
 import 'package:flutter_eproject/Signin.dart';
 import 'package:flutter_eproject/Updateprofile.dart';
@@ -130,7 +130,7 @@ class _FirestoreGridViewState extends State<City> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Citiguide',
+          'PetsCare',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ class _FirestoreGridViewState extends State<City> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => pets()),
+            MaterialPageRoute(builder: (context) => Pets()),
           );
         },
         child: const Icon(Icons.feedback, color: Colors.white),
@@ -212,29 +212,28 @@ class _FirestoreGridViewState extends State<City> {
                       style: TextStyle(color: Colors.black),
                     ),
                   ),
-                  // Drawer Items
                   // ListTile(
                   //   leading: Icon(Icons.contact_page, color: Colors.black),
-                  //   title: Text("Contact Us",
+                  //   title: Text("Pet Profile",
+                  //       style: TextStyle(color: Colors.black)),
+                  //   onTap: () {
+                  //     // Navigator.push(
+                  //     //   context,
+                  //     //   MaterialPageRoute(builder: (context) => Pets()),
+                  //     // );
+                  //   },
+                  // ),
+                  // ListTile(
+                  //   leading: Icon(Icons.person, color: Colors.black),
+                  //   title: Text("Update Profile",
                   //       style: TextStyle(color: Colors.black)),
                   //   onTap: () {
                   //     Navigator.push(
                   //       context,
-                  //       MaterialPageRoute(builder: (context) => Contactus()),
+                  //       MaterialPageRoute(builder: (context) => Update()),
                   //     );
                   //   },
                   // ),
-                  ListTile(
-                    leading: Icon(Icons.person, color: Colors.black),
-                    title: Text("Update Profile",
-                        style: TextStyle(color: Colors.black)),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Update()),
-                      );
-                    },
-                  ),
                   ListTile(
                     leading: Icon(Icons.rate_review, color: Colors.black),
                     title:
@@ -246,6 +245,17 @@ class _FirestoreGridViewState extends State<City> {
                       );
                     },
                   ),
+                  // ListTile(
+                  //   leading: Icon(Icons.rate_review, color: Colors.black),
+                  //   title:
+                  //       Text("Rate us", style: TextStyle(color: Colors.black)),
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(builder: (context) => Rateus()),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),
@@ -264,7 +274,6 @@ class _FirestoreGridViewState extends State<City> {
           final cities = snapshot.data!.docs.map((doc) {
             return {
               "Name": doc["Name"],
-              "Description": doc["Description"],
               "Image": doc["Image"],
             };
           }).toList();
@@ -284,7 +293,7 @@ class _FirestoreGridViewState extends State<City> {
                 return buildCard(
                   context: context,
                   name: city["Name"]!,
-                  description: city["Description"]!,
+                  
                   imageUrl: city["Image"]!,
                 );
               },
@@ -298,7 +307,7 @@ class _FirestoreGridViewState extends State<City> {
   Widget buildCard({
     required BuildContext context,
     required String name,
-    required String description,
+    
     required String imageUrl,
   }) {
     return Card(
@@ -335,13 +344,7 @@ class _FirestoreGridViewState extends State<City> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    description,
-                    style: TextStyle(fontSize: 14, color: Colors.white70),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  
                 ],
               ),
             ),

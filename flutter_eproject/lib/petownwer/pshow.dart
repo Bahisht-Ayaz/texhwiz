@@ -2,13 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_eproject/petownwer/pets_details.dart';
 
 void main() {
-  runApp(const ashow());
+  runApp(const pshow());
 }
 
-class ashow extends StatelessWidget {
-  const ashow({super.key});
+class pshow extends StatelessWidget {
+  const pshow({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       controller: age,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.number),
+                        suffixIcon: Icon(Icons.calendar_today_outlined),
                       ),
                     ),
                   ),
@@ -138,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton.icon(
                     onPressed: () {
                       update_record(
-                          id, name.text, description.text, image.text);
+                          id, name.text, age.text,breed.text,gender.text,photo.text);
                       Navigator.of(con, rootNavigator: true).pop();
                     },
                     label: Text("Yes"),
