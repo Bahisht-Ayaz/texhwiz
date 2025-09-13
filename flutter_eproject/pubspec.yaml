@@ -43,6 +43,8 @@ dependencies:
   firebase_auth:
   google_sign_in:
   url_launcher: ^6.1.5
+  firebase_storage:
+  carousel_slider: ^5.0.0
 
  # Add the rating bar package
 

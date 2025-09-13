@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_eproject/city.dart';
+import 'package:flutter_eproject/pet_owner.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 void main() {
@@ -56,7 +56,7 @@ class _RateUsPageState extends State<RateUsPage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (builder) => City()),
+              MaterialPageRoute(builder: (builder) => HomePage()),
             );
           },
         ),
@@ -167,7 +167,7 @@ class _RateUsPageState extends State<RateUsPage> {
                     if (!_isRated) // Only show the "Maybe Later" button if not rated
                       TextButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>City())); // Close the Rate Us screen
+                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>HomePage())); // Close the Rate Us screen
                         },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -237,7 +237,7 @@ class ThankYouPage extends StatelessWidget {
               SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (builder)=>City())); // Close the Rate Us screen
+                Navigator.push(context, MaterialPageRoute(builder: (builder)=>HomePage())); // Close the Rate Us screen
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF1E88E5), // Green color for the button

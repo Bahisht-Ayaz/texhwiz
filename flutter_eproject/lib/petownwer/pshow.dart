@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_eproject/petownwer/pets_details.dart';
+import 'package:flutter_eproject/petownwer/addpet.dart';
 
 void main() {
   runApp(const pshow());
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void update_dialog(
       BuildContext con, String id, String n, String a, String b, String g, String p) {
     TextEditingController name = TextEditingController(text: n);
-    TextEditingController age = TextEditingController(text: a);
+    TextEditingController age = TextEditingController(text: a.toString());
     TextEditingController breed = TextEditingController(text: b);
     TextEditingController gender = TextEditingController(text: g);
     TextEditingController photo = TextEditingController(text: p);
@@ -216,9 +216,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            mydata["Age"] ?? "No Age",
-                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                          ),
+  mydata["Age"] != null ? mydata["Age"].toString() : "No Age",
+  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+),
                           Text(
                             mydata["Breed"] ?? "No Breed",
                             style: TextStyle(fontSize: 14, color: Colors.grey[600]),

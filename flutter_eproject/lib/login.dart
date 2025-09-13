@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_eproject/Signin.dart';
-import 'package:flutter_eproject/city.dart';
+import 'package:flutter_eproject/pet_owner.dart';
 import 'package:flutter_eproject/forgotpassword.dart';
 import 'package:flutter_eproject/main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         auth.signInWithCredential(cred);
         print(auth.currentUser!.displayName);
-        Navigator.push(context, MaterialPageRoute(builder: (builder)=>City()));
+        Navigator.push(context, MaterialPageRoute(builder: (builder)=>HomePage()));
     }catch(e){
       print("$e");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       FirebaseAuth auth = FirebaseAuth.instance;
       UserCredential ca = await auth.signInWithEmailAndPassword(
           email: b.text, password: c.text);
-      Navigator.push(context, MaterialPageRoute(builder: (a) => City()));
+      Navigator.push(context, MaterialPageRoute(builder: (a) => HomePage()));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("$e"),

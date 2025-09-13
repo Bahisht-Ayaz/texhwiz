@@ -2,7 +2,7 @@ import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_eproject/city.dart';
+import 'package:flutter_eproject/pet_owner.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,8 @@ class Feedbacks extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Feedback Form',
       theme: ThemeData(
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.blue[50],
       ),
       home: const MyHomePage(title: 'Feedback Form'),
     );
@@ -55,60 +56,60 @@ class _MyHomePageState extends State<MyHomePage> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Saved Data Successfully")),
+          const SnackBar(content: Text("✅ Feedback Submitted Successfully")),
         );
         name.clear();
         email.clear();
         message.clear();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("$e")),
+          SnackBar(content: Text("Error: $e")),
         );
       }
     }
   }
 
-  String? validateName(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "Name is required";
-    }
-    return null;
-  }
+  String? validateName(String? value) =>
+      (value == null || value.trim().isEmpty) ? "Name is required" : null;
 
   String? validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "Email is required";
-    }
+    if (value == null || value.trim().isEmpty) return "Email is required";
     final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    if (!emailRegExp.hasMatch(value)) {
-      return "Enter a valid email address";
-    }
+    if (!emailRegExp.hasMatch(value)) return "Enter a valid email address";
     return null;
   }
 
-  String? validateMessage(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "Message is required";
-    }
-    return null;
-  }
+  String? validateMessage(String? value) =>
+      (value == null || value.trim().isEmpty) ? "Message is required" : null;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Back arrow icon
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (builder) => City()),
-            ); // Navigate to the previous page
+              MaterialPageRoute(builder: (builder) => HomePage()),
+            );
           },
         ),
-        backgroundColor: Color(0xFF1E88E5), // Sky green background color
-        elevation: 4, // Adds a subtle shadow
-        centerTitle: true, // Title aligned to the left
+        centerTitle: true,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueAccent, Colors.lightBlue],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          "Feedback Form",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -117,60 +118,82 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
+                  const Icon(Icons.feedback,
+                      size: 80, color: Colors.blueAccent),
+                  const SizedBox(height: 20),
                   const Text(
-                    "Feedback Form",
+                    "We value your feedback 💙",
                     style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.lightBlue,
-                      letterSpacing: 2,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blueGrey,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
+
+                  // Name
                   buildTextField(
                     controller: name,
-                    hintText: "Enter Name",
+                    hintText: "Enter your Name",
                     icon: Icons.person,
-                    obscureText: false,
                     validator: validateName,
                   ),
                   const SizedBox(height: 20),
+
+                  // Email
                   buildTextField(
                     controller: email,
-                    hintText: "Enter Email",
+                    hintText: "Enter your Email",
                     icon: Icons.mail,
-                    obscureText: false,
                     validator: validateEmail,
                   ),
                   const SizedBox(height: 20),
+
+                  // Message
                   buildTextField(
                     controller: message,
-                    hintText: "Enter Message",
+                    hintText: "Enter your Message",
                     icon: Icons.message,
-                    obscureText: false,
                     validator: validateMessage,
+                    maxLines: 4,
                   ),
                   const SizedBox(height: 40),
 
-                  ElevatedButton.icon(
-                    onPressed: saveData,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  // Submit Button
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      gradient: const LinearGradient(
+                        colors: [Colors.blueAccent, Colors.lightBlue],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      elevation: 10,
                     ),
-                    label: const Text(
-                      "Submit Feedback",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.lightBlue),
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: saveData,
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      label: const Text(
+  "Submit Feedback",
+  style: TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.white, // ✅ White text color
+  ),
+),
                     ),
-                    icon: const Icon(Icons.feedback_sharp,color: Colors.lightBlue,),
                   ),
-                  const SizedBox(height: 20),
-                  
                 ],
               ),
             ),
@@ -184,25 +207,27 @@ class _MyHomePageState extends State<MyHomePage> {
     required TextEditingController controller,
     required String hintText,
     required IconData icon,
-    required bool obscureText,
     required String? Function(String?) validator,
+    int maxLines = 1,
   }) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 350),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        validator: validator,
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white.withOpacity(0.1),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.black),
-          ),
-          hintText: hintText,
-          suffixIcon: Icon(icon, color: Colors.black),
-          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        prefixIcon: Icon(icon, color: Colors.blueAccent),
+        hintText: hintText,
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.blueAccent, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
         ),
       ),
     );
