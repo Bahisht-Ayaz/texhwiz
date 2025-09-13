@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_eproject/animal_shelter/shelter.dart';
 
 // Import your pages
 import 'petownwer/petprofile.dart';
@@ -83,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(width: 10),
                 Text(
                   "Hi, ${currentUser?.displayName ?? "Pet Lover"} 👋",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
                 ),
               ],
             ),
@@ -143,13 +144,13 @@ class _HomePageState extends State<HomePage> {
                 _buildFeatureCard(context, Icons.shopping_bag, "Pet Store",
                     "Shop for pets", const PetStorePage(), Colors.green),
                 _buildFeatureCard(context, Icons.article, "Blogs & Tips",
-                    "Learn pet care", const ArticlesPage(), Colors.purple),
+                    "Learn pet care", const BlogTipsPage(), Colors.purple),
                 _buildFeatureCard(context, Icons.feedback, "Feedback",
                     "Share your views", const Feedbacks(), Colors.teal),
                 _buildFeatureCard(context, Icons.star_rate, "Rate Us",
                     "Give rating", Rateus(), Colors.amber),
                 _buildFeatureCard(context, Icons.support_agent, "Contact Us",
-                    "We are here to help", const Contactus(), Colors.indigo),
+                    "We are here to help",  Contactus(), Colors.indigo),
               ],
             ),
           ),

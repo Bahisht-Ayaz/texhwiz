@@ -12,7 +12,10 @@ class Rateus extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Rate Us Page',
-      
+      theme: ThemeData(
+        primaryColor: const Color(0xFF1E88E5),
+        scaffoldBackgroundColor: Colors.white,
+      ),
       home: RateUsPage(),
     );
   }
@@ -23,26 +26,42 @@ class RateUsPage extends StatefulWidget {
   _RateUsPageState createState() => _RateUsPageState();
 }
 
-class _RateUsPageState extends State<RateUsPage> {
+class _RateUsPageState extends State<RateUsPage>
+    with SingleTickerProviderStateMixin {
   double _rating = 0;
-  bool _isRated = false; // To track whether the user has rated
+  bool _isRated = false;
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
-  // Navigate to the next page after rating submission
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 700))
+          ..forward();
+    _scaleAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _submitRating() {
     if (_rating > 0) {
       setState(() {
-        _isRated = true; // Mark the app as rated
+        _isRated = true;
       });
 
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => ThankYouPage(),
-        ),
+        MaterialPageRoute(builder: (context) => ThankYouPage()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please rate the app before submitting.')),
+        const SnackBar(content: Text('⭐ Please rate the app before submitting!')),
       );
     }
   }
@@ -50,9 +69,10 @@ class _RateUsPageState extends State<RateUsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  appBar: AppBar(
+      // Gradient AppBar
+      appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.push(
               context,
@@ -60,80 +80,83 @@ class _RateUsPageState extends State<RateUsPage> {
             );
           },
         ),
-        backgroundColor: Color(0xFF1E88E5),
-        elevation: 4,
+        title: const Text(
+          "Rate Us",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 4,
       ),
-    
+
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Center(
-          child: SingleChildScrollView(
+          child: ScaleTransition(
+            scale: _scaleAnimation,
             child: Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
+                borderRadius: BorderRadius.circular(25.0),
               ),
-              elevation: 12,
-              shadowColor: Colors.black.withOpacity(0.3), // Subtle shadow for card
+              elevation: 10,
+              shadowColor: Colors.blue.withOpacity(0.3),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Icon or logo at the top (Optional)
                     Icon(
-                      Icons.star_rate,
-                      size: 100,
-                      color: Colors.amber, // Golden icon
+                      Icons.star_rounded,
+                      size: 110,
+                      color: const Color(0xFF1E88E5),
                     ),
-                    SizedBox(height: 20),
-
-                    // Attractive Rate Us Heading
-                    if (!_isRated) // Only show the title if not rated
-                      Text(
-                        'We Value Your Feedback!',
-                        style: TextStyle(
-                          fontSize: 32, // Larger font size
-                          fontWeight: FontWeight.bold, // Make it bold
-                          color: Colors.black, // Vibrant amber color
-                          letterSpacing: 2.0, // Slightly increased letter spacing
-                          shadows: [
-                            Shadow(
-                              blurRadius: 5.0,
-                              color: Colors.black.withOpacity(0.3),
-                              offset: Offset(3.0, 3.0),
-                            ),
-                          ], // Text shadow for extra pop
-                        ),
-                        textAlign: TextAlign.center,
+                    const SizedBox(height: 20),
+                    Text(
+                      'We Value Your Feedback!',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1E88E5),
+                        shadows: [
+                          Shadow(
+                            color: Colors.blue.withOpacity(0.2),
+                            blurRadius: 5,
+                            offset: Offset(2, 2),
+                          )
+                        ],
                       ),
-                    SizedBox(height: 10),
-
-                    // Description Text
-                    if (!_isRated) // Only show the description if not rated
-                      Text(
-                        'Please rate our app and help us improve your experience.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Please rate our app and help us improve your experience.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                        height: 1.4,
                       ),
-                    SizedBox(height: 30),
-
-                    // Star Rating Widget
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 30),
                     RatingBar.builder(
                       initialRating: _rating,
                       minRating: 1,
                       direction: Axis.horizontal,
                       itemCount: 5,
-                      itemSize: 40,
-                      itemPadding: EdgeInsets.symmetric(horizontal: 4),
-                      itemBuilder: (context, _) => Icon(
-                        Icons.star,
-                        color: Colors.amber, // Golden stars
+                      itemSize: 45,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 6),
+                      unratedColor: Colors.grey[300],
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star_rounded,
+                        color: Color.fromARGB(255, 58, 211, 28),
                       ),
                       onRatingUpdate: (rating) {
                         setState(() {
@@ -141,47 +164,53 @@ class _RateUsPageState extends State<RateUsPage> {
                         });
                       },
                     ),
-                    SizedBox(height: 30),
-
-                    // Submit Button
+                    const SizedBox(height: 35),
                     ElevatedButton(
                       onPressed: _submitRating,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF1E88E5), // Golden color for the button
-                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                        elevation: 8, // Slight shadow for the button
+                        backgroundColor: const Color(0xFF1E88E5),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14, horizontal: 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 8,
                       ),
-                      child: Text(
+                      child: const Text(
                         'Submit Rating',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white, // Black text color for the button
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-
-                    // Maybe Later Button
-                    if (!_isRated) // Only show the "Maybe Later" button if not rated
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (builder)=>HomePage())); // Close the Rate Us screen
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                          side: BorderSide(color: Color(0xFF1E88E5), width: 1.5), // Golden border for maybe later
-                        ),
-                        child: Text(
-                          'Maybe Later',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black, // Golden text color for maybe later
-                            fontWeight: FontWeight.bold,
-                          ),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (builder) => HomePage()),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 25),
+                        side: const BorderSide(
+                            color: Color(0xFF1E88E5), width: 1.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      child: const Text(
+                        'Maybe Later',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF1E88E5),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -197,55 +226,72 @@ class ThankYouPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Gradient AppBar
       appBar: AppBar(
-        backgroundColor: Color(0xFF1E88E5),
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white),
+        title: const Text(
+          "Thank You",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        elevation: 2,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(25.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.thumb_up,
-                size: 100,
-                color: const Color.fromARGB(255, 113, 255, 118), // Green thumbs-up icon for success
+                Icons.thumb_up_alt_rounded,
+                size: 110,
+                color: const Color(0xFF1E88E5),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 25),
+              const Text(
                 'Thank You for Your Feedback!',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  letterSpacing: 1.2,
+                  color: Color(0xFF1E88E5),
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
-              Text(
-                'Your feedback helps us improve our app.',
+              const SizedBox(height: 12),
+              const Text(
+                'Your feedback helps us improve our app 🎉',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black,
-                  height: 1.5,
+                  color: Colors.black87,
+                  height: 1.4,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 35),
               ElevatedButton(
                 onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (builder)=>HomePage())); // Close the Rate Us screen
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (builder) => HomePage()));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF1E88E5), // Green color for the button
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  elevation: 8, // Slight shadow for the button
+                  backgroundColor: const Color(0xFF1E88E5),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 14, horizontal: 50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  elevation: 8,
                 ),
-                child: Text(
+                child: const Text(
                   'Ok',
                   style: TextStyle(
                     fontSize: 18,

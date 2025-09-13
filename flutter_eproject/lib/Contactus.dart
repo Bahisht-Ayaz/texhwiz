@@ -21,7 +21,16 @@ class Contactus extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Contact Form',
       theme: ThemeData(
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.blue.shade50,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none,
+          ),
+        ),
       ),
       home: const MyHomePage(title: 'Contact Form'),
     );
@@ -40,7 +49,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
-  final TextEditingController phone = TextEditingController(); // ✅ NEW
+  final TextEditingController phone = TextEditingController();
   final TextEditingController message = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -52,16 +61,16 @@ class _MyHomePageState extends State<MyHomePage> {
         db.collection("Contact").add({
           "Name": name.text.trim(),
           "Email": email.text.trim(),
-          "Phoneno": phone.text.trim(), // ✅ NEW
+          "Phoneno": phone.text.trim(),
           "Message": message.text.trim(),
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Saved Data Successfully")),
+          const SnackBar(content: Text("✅ Data Saved Successfully")),
         );
         name.clear();
         email.clear();
-        phone.clear(); // ✅ CLEAR phone
+        phone.clear();
         message.clear();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -71,127 +80,104 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  String? validateName(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "Name is required";
-    }
-    return null;
-  }
-
-  String? validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "Email is required";
-    }
-    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    if (!emailRegExp.hasMatch(value)) {
-      return "Enter a valid email address";
-    }
-    return null;
-  }
-
-  String? validatePhone(String? value) { // ✅ NEW
-    if (value == null || value.trim().isEmpty) {
-      return "Phone number is required";
-    }
-    final phoneRegExp = RegExp(r'^[0-9]{10,15}$'); // 10-15 digits
-    if (!phoneRegExp.hasMatch(value)) {
-      return "Enter a valid phone number";
-    }
-    return null;
-  }
-
-  String? validateMessage(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "Message is required";
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Back arrow icon
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (builder) => HomePage()),
-            ); // Navigate to the previous page
+            );
           },
         ),
-        backgroundColor: Color(0xFF1E88E5), // Sky green background color
-        elevation: 4, // Adds a subtle shadow
-        centerTitle: true, // Title aligned to the left
+        title: const Text("Contact Us", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue.shade700,
+        elevation: 4,
+        centerTitle: true,
       ),
       body: Center(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Contact Us Form",
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.lightBlue,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  buildTextField(
-                    controller: name,
-                    hintText: "Enter Name",
-                    icon: Icons.person,
-                    obscureText: false,
-                    validator: validateName,
-                  ),
-                  const SizedBox(height: 20),
-                  buildTextField(
-                    controller: email,
-                    hintText: "Enter Email",
-                    icon: Icons.mail,
-                    obscureText: false,
-                    validator: validateEmail,
-                  ),
-                  const SizedBox(height: 20),
-                  buildTextField( // ✅ NEW FIELD
-                    controller: phone,
-                    hintText: "Enter Phone Number",
-                    icon: Icons.phone,
-                    obscureText: false,
-                    validator: validatePhone,
-                  ),
-                  const SizedBox(height: 20),
-                  buildTextField(
-                    controller: message,
-                    hintText: "Enter Message",
-                    icon: Icons.message,
-                    obscureText: false,
-                    validator: validateMessage,
-                  ),
-                  const SizedBox(height: 40),
-                  ElevatedButton.icon(
-                    onPressed: saveData,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+          padding: const EdgeInsets.all(24.0),
+          child: Card(
+            elevation: 12,
+            shadowColor: Colors.blue.shade100,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(28.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Contact Us",
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade700,
+                        letterSpacing: 1.5,
                       ),
-                      elevation: 10,
                     ),
-                    label: const Text(
-                      "Submit",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.lightBlue),
+                    const SizedBox(height: 20),
+                    buildTextField(
+                      controller: name,
+                      hintText: "Enter Name",
+                      icon: Icons.person,
+                      validator: (val) =>
+                          val == null || val.isEmpty ? "Name required" : null,
                     ),
-                    icon: const Icon(Icons.phone,color: Colors.lightBlue,),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 16),
+                    buildTextField(
+                      controller: email,
+                      hintText: "Enter Email",
+                      icon: Icons.mail,
+                      validator: (val) =>
+                          val == null || !val.contains("@") ? "Valid Email required" : null,
+                    ),
+                    const SizedBox(height: 16),
+                    buildTextField(
+                      controller: phone,
+                      hintText: "Enter Phone Number",
+                      icon: Icons.phone,
+                      validator: (val) =>
+                          val == null || val.length < 10 ? "Valid Phone required" : null,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 16),
+                    buildTextField(
+                      controller: message,
+                      hintText: "Enter Message",
+                      icon: Icons.message,
+                      validator: (val) =>
+                          val == null || val.isEmpty ? "Message required" : null,
+                      maxLines: 4,
+                    ),
+                    const SizedBox(height: 25),
+                    ElevatedButton.icon(
+                      onPressed: saveData,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade700,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14, horizontal: 28),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 6,
+                      ),
+                      icon: const Icon(Icons.send),
+                      label: const Text(
+                        "Submit",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -204,27 +190,18 @@ class _MyHomePageState extends State<MyHomePage> {
     required TextEditingController controller,
     required String hintText,
     required IconData icon,
-    required bool obscureText,
     required String? Function(String?) validator,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
   }) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 350),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        validator: validator,
-        keyboardType: hintText.contains("Phone") ? TextInputType.phone : TextInputType.text, // ✅ PHONE keyboard
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white.withOpacity(0.1),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.black),
-          ),
-          hintText: hintText,
-          suffixIcon: Icon(icon, color: Colors.black),
-          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-        ),
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hintText,
+        prefixIcon: Icon(icon, color: Colors.blue.shade700),
       ),
     );
   }

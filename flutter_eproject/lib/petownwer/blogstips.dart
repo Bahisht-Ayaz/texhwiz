@@ -1,152 +1,297 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ArticlesPage extends StatefulWidget {
-  const ArticlesPage({super.key});
+class BlogTipsPage extends StatefulWidget {
+  const BlogTipsPage({Key? key}) : super(key: key);
 
   @override
-  State<ArticlesPage> createState() => _ArticlesPageState();
+  State<BlogTipsPage> createState() => _BlogTipsPageState();
 }
 
-class _ArticlesPageState extends State<ArticlesPage> {
-  String searchQuery = "";
+class _BlogTipsPageState extends State<BlogTipsPage> {
+  final TextEditingController _searchCtrl = TextEditingController();
+  List<String> selectedTags = [];
+  List<String> bookmarkedIds = [];
+  bool showBookmarksOnly = false;
 
-  Future<void> bookmarkArticle(String articleId) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    await FirebaseFirestore.instance.collection("bookmarks").add({
-      "userId": uid,
-      "articleId": articleId,
-      "createdAt": FieldValue.serverTimestamp(),
+  final List<Map<String, dynamic>> articles = [
+    {
+      'id': 'a1',
+      'title': 'Basic Puppy Training — Sit & Stay',
+      'tags': ['training'],
+      'summary': 'Quick steps to teach your puppy sit & stay.',
+      'content': 'Step 1: Use treats. Step 2: Be consistent. Step 3: Short sessions...'
+    },
+    {
+      'id': 'a2',
+      'title': 'Nutrition 101 for Adult Dogs',
+      'tags': ['nutrition'],
+      'summary': 'Balanced food choices for dogs.',
+      'content': 'Dogs need protein, fats, carbs and micronutrients. Read labels...'
+    },
+    {
+      'id': 'a3',
+      'title': 'First Aid: What to do for Cuts',
+      'tags': ['first-aid'],
+      'summary': 'Immediate steps for small cuts.',
+      'content': 'Clean wound with saline, apply pressure, see vet if deep...'
+    },
+    {
+      'id': 'a4',
+      'title': 'How to Socialize a Shy Cat',
+      'tags': ['behavior', 'training'],
+      'summary': 'Gentle trust-building with shy cats.',
+      'content': 'Start with quiet space, use treats, avoid forced interactions...'
+    },
+    {
+      'id': 'a5',
+      'title': 'Healthy Treats You Can Make',
+      'tags': ['nutrition'],
+      'summary': 'Vet-safe treat recipes for pets.',
+      'content': 'Pumpkin + oats + egg → bake at 180°C for 15 minutes...'
+    },
+  ];
+
+  final List<String> allTags = ['training', 'nutrition', 'first-aid', 'behavior'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookmarks();
+  }
+
+  Future<void> _loadBookmarks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final ids = prefs.getStringList('bookmarked_articles') ?? [];
+    setState(() => bookmarkedIds = ids);
+  }
+
+  Future<void> _toggleBookmark(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (bookmarkedIds.contains(id)) {
+        bookmarkedIds.remove(id);
+      } else {
+        bookmarkedIds.add(id);
+      }
+      prefs.setStringList('bookmarked_articles', bookmarkedIds);
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("✅ Article bookmarked")),
+  }
+
+  List<Map<String, dynamic>> get filteredArticles {
+    final q = _searchCtrl.text.trim().toLowerCase();
+    return articles.where((a) {
+      if (showBookmarksOnly && !bookmarkedIds.contains(a['id'])) return false;
+      if (selectedTags.isNotEmpty &&
+          (a['tags'] as List).where((t) => selectedTags.contains(t)).isEmpty) return false;
+      if (q.isEmpty) return true;
+      final inTitle = (a['title'] as String).toLowerCase().contains(q);
+      final inSummary = (a['summary'] as String).toLowerCase().contains(q);
+      final inContent = (a['content'] as String).toLowerCase().contains(q);
+      return inTitle || inSummary || inContent;
+    }).toList();
+  }
+
+  void _openArticle(Map<String, dynamic> article) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ArticleDetailPage(
+          article: article,
+          isBookmarked: bookmarkedIds.contains(article['id']),
+          onToggleBookmark: () => _toggleBookmark(article['id']),
+        ),
+      ),
+    );
+  }
+
+  Widget _tagChip(String tag) {
+    final selected = selectedTags.contains(tag);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: FilterChip(
+        label: Text(tag, style: TextStyle(color: selected ? Colors.white : Colors.blue.shade900)),
+        selected: selected,
+        backgroundColor: Colors.white.withOpacity(0.7),
+        selectedColor: Colors.blue,
+        onSelected: (val) {
+          setState(() {
+            if (val) {
+              selectedTags.add(tag);
+            } else {
+              selectedTags.remove(tag);
+            }
+          });
+        },
+        shape: StadiumBorder(side: BorderSide(color: Colors.blue.shade700)),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final items = filteredArticles;
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(
-          "Pet Care Articles",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blueAccent,
+        title: const Text('Explore Blogs & Tips', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(showBookmarksOnly ? Icons.bookmark : Icons.bookmark_border, color: Colors.white),
+            onPressed: () => setState(() => showBookmarksOnly = !showBookmarksOnly),
+          ),
+        ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // 🔍 Search Box
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Search by title or tag...",
-                prefixIcon: const Icon(Icons.search, color: Colors.blueAccent),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
+          // 🌊 Blue Gradient Background
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.white, Colors.blue.shade200, Colors.blue.shade500],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-              onChanged: (val) {
-                setState(() => searchQuery = val.toLowerCase());
-              },
             ),
           ),
 
-          // 🔹 Articles List
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("articles")
-                  .orderBy("createdAt", descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final docs = snapshot.data!.docs.where((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  final title = (data["title"] ?? "").toString().toLowerCase();
-                  final tags = (data["tags"] as List<dynamic>? ?? [])
-                      .map((e) => e.toString().toLowerCase())
-                      .toList();
-                  return title.contains(searchQuery) ||
-                      tags.any((tag) => tag.contains(searchQuery));
-                }).toList();
+          // 🌫 Blur Overlay
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: Container(color: Colors.black.withOpacity(0.15)),
+            ),
+          ),
 
-                if (docs.isEmpty) {
-                  return const Center(
-                      child: Text(
-                    "No articles found",
-                    style: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  ));
-                }
-
-                return ListView(
-                  padding: const EdgeInsets.all(12),
-                  children: docs.map((doc) {
-                    final data = doc.data() as Map<String, dynamic>;
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      elevation: 3,
-                      shadowColor: Colors.blueAccent.withOpacity(0.3),
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(16),
-                        title: Text(
-                          data["title"] ?? "No Title",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 6.0),
-                          child: Text(
-                            (data["content"] ?? "")
-                                .toString()
-                                .substring(
-                                    0,
-                                    ((data["content"] ?? "")
-                                                .toString()
-                                                .length >
-                                            70
-                                        ? 70
-                                        : (data["content"] ?? "")
-                                            .toString()
-                                            .length)),
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.bookmark_border,
-                              color: Colors.blueAccent),
-                          onPressed: () => bookmarkArticle(doc.id),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ArticleDetailPage(
-                                title: data["title"] ?? "No Title",
-                                content: data["content"] ?? "",
-                                tags: List<String>.from(data["tags"] ?? []),
-                              ),
-                            ),
-                          );
-                        },
+          // 📰 Blog Content
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 90, 12, 12),
+            child: Column(
+              children: [
+                // 🔍 Search bar
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(color: Colors.blue.shade200, blurRadius: 8, offset: const Offset(0, 3)),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchCtrl,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: 'Search articles...',
+                      hintStyle: TextStyle(color: Colors.blue.shade900.withOpacity(0.6)),
+                      prefixIcon: Icon(Icons.search, color: Colors.blue.shade700),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
                       ),
-                    );
-                  }).toList(),
-                );
-              },
+                    ),
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // 🏷 Tags row
+                SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: allTags.map(_tagChip).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // 📚 Articles Grid
+                Expanded(
+                  child: items.isEmpty
+                      ? Center(
+                          child: Text('No articles found.',
+                              style: TextStyle(color: Colors.blue.shade900, fontSize: 16)),
+                        )
+                      : GridView.builder(
+                          itemCount: items.length,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.85,
+                          ),
+                          itemBuilder: (context, index) {
+                            final a = items[index];
+                            final isBook = bookmarkedIds.contains(a['id']);
+                            return GestureDetector(
+                              onTap: () => _openArticle(a),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: Colors.white.withOpacity(0.9),
+                                  border: Border.all(color: Colors.blue.shade300),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.blue.withOpacity(0.2),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4))
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Wrap(
+                                      spacing: 4,
+                                      children: (a['tags'] as List)
+                                          .map((t) => Chip(
+                                                label: Text(t,
+                                                    style: const TextStyle(
+                                                        fontSize: 10, color: Colors.white)),
+                                                backgroundColor: Colors.blue.shade700,
+                                              ))
+                                          .toList(),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      a['title'],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.blue.shade900),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      a['summary'],
+                                      style: TextStyle(color: Colors.blue.shade600, fontSize: 12),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const Spacer(),
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: IconButton(
+                                        icon: Icon(isBook ? Icons.bookmark : Icons.bookmark_border,
+                                            color: isBook ? Colors.blue.shade700 : Colors.blue.shade400),
+                                        onPressed: () => _toggleBookmark(a['id']),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
           ),
         ],
@@ -155,56 +300,83 @@ class _ArticlesPageState extends State<ArticlesPage> {
   }
 }
 
+// ---------------- Article Detail Page ----------------
 class ArticleDetailPage extends StatelessWidget {
-  final String title;
-  final String content;
-  final List<String> tags;
+  final Map<String, dynamic> article;
+  final bool isBookmarked;
+  final VoidCallback onToggleBookmark;
 
   const ArticleDetailPage({
-    super.key,
-    required this.title,
-    required this.content,
-    required this.tags,
-  });
+    Key? key,
+    required this.article,
+    required this.isBookmarked,
+    required this.onToggleBookmark,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(title,
-            style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.blueAccent,
+        title: Text(article['title'],
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(content,
-                  style: const TextStyle(fontSize: 16, height: 1.5)),
-              const SizedBox(height: 16),
-              const Text("Tags:",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent)),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: tags.map((tag) {
-                  return Chip(
-                    label: Text(tag,
-                        style: const TextStyle(color: Colors.white)),
-                    backgroundColor: Colors.blueAccent,
-                  );
-                }).toList(),
-              ),
-            ],
+        actions: [
+          IconButton(
+            icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border, color: Colors.white),
+            onPressed: onToggleBookmark,
           ),
-        ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // 🌊 Gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.white, Colors.blue.shade200, Colors.blue.shade500],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+
+          // 🌫 Blur
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: Container(color: Colors.black.withOpacity(0.15)),
+            ),
+          ),
+
+          // 📖 Article
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 90, 16, 16),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    children: (article['tags'] as List)
+                        .map((t) => Chip(
+                              label: Text(t, style: const TextStyle(color: Colors.white)),
+                              backgroundColor: Colors.blue.shade700,
+                            ))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    article['content'],
+                    style: const TextStyle(
+                        fontSize: 16, height: 1.5, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

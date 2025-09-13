@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -54,17 +55,17 @@ class _MyHomePageState extends State<MyHomePage> {
 @override
 void initState(){
   super.initState();
-  Timer(Duration(seconds: 2), () => Navigator.pushReplacement(context,
+  Timer(Duration(seconds: 5), () => Navigator.pushReplacement(context,
    MaterialPageRoute(builder: (a)=>HomePage())));
 }
 
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-      backgroundColor: Colors.white, // Background color for the splash screen
+      backgroundColor: Colors.blue[100], // Background color for the splash screen
       body: Center(
-        child: Image.asset(
-          'citiguide.png',width: 150,
+        child: Lottie.asset(
+          "assets/images/PetCare.json",width: 200, height: 200
         ),
       ),
     );

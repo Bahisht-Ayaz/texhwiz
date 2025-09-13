@@ -1,16 +1,12 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_eproject/Signin.dart';
 import 'package:flutter_eproject/pet_owner.dart';
 import 'package:flutter_eproject/forgotpassword.dart';
-import 'package:flutter_eproject/main.dart';
+import 'package:flutter_eproject/pet_owner.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'firebase_options.dart';
 
 void main() {
   runApp(const login());
@@ -23,19 +19,19 @@ class login extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Pet Shelter',
       theme: ThemeData(
+        primaryColor: const Color(0xFFE6E6FA), // Lavender
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Pet Shelter Login'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -44,225 +40,194 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
-  void mera_kaam() async {
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  // 🔹 Google Login
+  void googleLogin() async {
     try {
       GoogleSignInAccount? account = await GoogleSignIn(
-        clientId: "1086543133004-oircvhgjc43b0aqvctivrpq8i4bk55ae.apps.googleusercontent.com").signIn();
-        GoogleSignInAuthentication authenticate = await account!.authentication;
-        AuthCredential cred = await GoogleAuthProvider.credential(
-          accessToken: authenticate.accessToken,
-          idToken: authenticate.idToken
-        );
-        auth.signInWithCredential(cred);
-        print(auth.currentUser!.displayName);
-        Navigator.push(context, MaterialPageRoute(builder: (builder)=>HomePage()));
-    }catch(e){
-      print("$e");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
+        clientId:
+            "1086543133004-oircvhgjc43b0aqvctivrpq8i4bk55ae.apps.googleusercontent.com",
+      ).signIn();
+
+      GoogleSignInAuthentication authenticate = await account!.authentication;
+      AuthCredential cred = GoogleAuthProvider.credential(
+          accessToken: authenticate.accessToken, idToken: authenticate.idToken);
+
+      await auth.signInWithCredential(cred);
+
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (builder) => HomePage()));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("$e"), backgroundColor: Colors.red),
+      );
     }
   }
-  TextEditingController b = TextEditingController();
-  TextEditingController c = TextEditingController();
 
+  // 🔹 Email/Password Login
   void login_func() async {
     try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      UserCredential ca = await auth.signInWithEmailAndPassword(
-          email: b.text, password: c.text);
-      Navigator.push(context, MaterialPageRoute(builder: (a) => HomePage()));
+      await auth.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (a) => HomePage()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("$e"),
-        backgroundColor: Colors.red, // Green background color
-    behavior: SnackBarBehavior.floating, // Optional: Makes the SnackBar float
-    duration: Duration(seconds: 3),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("$e"),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen width and height
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor:
-          Colors.transparent, // Transparent background to see the image
       body: Stack(
         children: [
-        // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'image.png', // Replace with your image asset
-              fit: BoxFit.cover, // Cover the entire screen
+          // 🌸 Gradient Background
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white, // Lavender
+                  Colors.blue.shade200,
+                  Colors.blue.shade400,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
           ),
 
-          // Blur Effect
+          // 🌫 Blur Overlay
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // Blur values
-              child: Container(
-                color: Colors.black.withOpacity(0.2), // Optional overlay color
-              ),
-                ),
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: Container(color: Colors.black.withOpacity(0.2)),
+            ),
           ),
 
-          // Glassmorphism Form
+          // 📝 Login Container
           Center(
             child: Container(
-              padding: EdgeInsets.all(
-                  screenWidth * 0.08), // Use percentage-based padding
-              width: screenWidth *
-                  0.9, // Set width as a percentage of screen width
+              padding: EdgeInsets.all(screenWidth * 0.08),
+              width: screenWidth * 0.9,
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2), // Glass effect
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.white, width: 1),
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
               ),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // 🐾 Logo
+                    Icon(Icons.pets, color: Colors.white, size: screenWidth * 0.15),
+                    SizedBox(height: screenHeight * 0.01),
                     Text(
-                      'LOGIN ',
+                      'Welcome Back 🐾',
                       style: TextStyle(
-                        fontSize: screenWidth * 0.08, // Scalable font size
+                        fontSize: screenWidth * 0.07,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    SizedBox(height: screenHeight * 0.02), // Scalable spacing
-                    // Email Input Field
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 5),
-                      decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                color: Colors.white
-                                    .withOpacity(0.7))), // White border
-                      ),
-                      child: TextField(
-                        controller: b,
-                        decoration: InputDecoration(
-                          labelText: "Email",
-                          labelStyle: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold), // White label color
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          hintStyle: TextStyle(
-                              color: Colors.white,
-                              fontWeight:
-                                  FontWeight.bold), // White hint text color
-                        ),
-                        style: TextStyle(
-                            color: Colors.white), // White input text color
-                      ),
-                    ),
-                    SizedBox(height: screenHeight * 0.02), // Scalable spacing
-                    // Password Input Field
+                    SizedBox(height: screenHeight * 0.03),
 
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 5),
-                      decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                color: Colors.white
-                                    .withOpacity(0.7))), // White border
-                      ),
-                      child: TextField(
-                        controller: c,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          labelStyle: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold), // White label color
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          hintStyle: TextStyle(
-                              color: Colors.white,
-                              fontWeight:
-                                  FontWeight.bold), // White hint text color
+                    // 🔹 Email
+                    _buildTextField("Email", emailController, false),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // 🔹 Password
+                    _buildTextField("Password", passwordController, true),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // 🔹 Forgot Password
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (builder) => forgotpass()),
+                          );
+                        },
+                        child: const Text(
+                          'Forgot password?',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        style: TextStyle(
-                            color: Colors.white), // White input text color
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.02),
-                    // Remember Me & Forgot Password
-                   Center(
-  child: TextButton(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (builder) => forgotpass()),
-      );
-    },
-    child: Text(
-      'Forgot password?',
-      style: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ),
-),
-        SizedBox(height: screenHeight * 0.02),
-// Login Button
+
+                    // 🔹 Login Button
+                    // 🔹 Login Button
 SizedBox(
-  width: screenWidth * 0.8, // Set a fixed width for consistency
+  width: double.infinity, // ✅ Full width
   child: ElevatedButton(
     onPressed: login_func,
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.yellow,
-      padding: EdgeInsets.symmetric(vertical: 15), // Adjust padding for height
+      backgroundColor: Colors.blue,
+      padding: const EdgeInsets.symmetric(vertical: 16), // ✅ Same height
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(3),
+        borderRadius: BorderRadius.circular(10),
       ),
+      elevation: 5,
     ),
-    child: Text(
+    child: const Text(
       'Login',
       style: TextStyle(
-        color: Colors.black,
-        fontSize: screenWidth * 0.04, // Scalable font size
+        color: Colors.white,
+        fontSize: 18,
         fontWeight: FontWeight.bold,
       ),
     ),
   ),
 ),
-SizedBox(height: 20), // Adds a gap between buttons
-// Sign Up Button
+
+const SizedBox(height: 12), // ✅ Space between buttons
+
+// 🔹 Google Sign In Button
 SizedBox(
-  width: screenWidth * 0.8, // Same fixed width as the Login button
+  width: double.infinity, // ✅ Full width
   child: ElevatedButton(
-    onPressed: mera_kaam,
+    onPressed: googleLogin,
     style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.yellow,
-      padding: EdgeInsets.symmetric(vertical: 15), // Adjust padding for height
+      backgroundColor: Colors.blue,
+      padding: const EdgeInsets.symmetric(vertical: 16), // ✅ Same height
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(3),
+        borderRadius: BorderRadius.circular(10),
       ),
+      elevation: 5,
     ),
     child: Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Center the icon and text
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-          FontAwesomeIcons.google, // You can replace this with a Google icon or another relevant icon
-          color: Colors.red,
-          size: screenWidth * 0.06, // Scalable icon size
-        ),
-        SizedBox(width: 10), // Space between the icon and the text
+        Icon(FontAwesomeIcons.google, color: Colors.white, size: 20),
+        const SizedBox(width: 12),
         Text(
-          'Sign Up with Google',
+          'Login with Google',
           style: TextStyle(
-            color: Colors.black,
-            fontSize: screenWidth * 0.04, // Scalable font size
+            color: Colors.white,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -271,22 +236,31 @@ SizedBox(
   ),
 ),
 
+                    SizedBox(height: screenHeight * 0.03),
 
-                    SizedBox(height: screenHeight * 0.02),
-                    // Register Link
-                    TextButton(
-                      onPressed: () {},
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (builder) => Signin()));
-                        },
-                        child: Text(
-                          "Don't have Account?",
-                          style: TextStyle(color: Colors.white),
+                    // 🔹 Sign Up Redirect
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account?",
+                            style: TextStyle(color: Colors.white70)),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const Signin()),
+                            );
+                          },
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -297,25 +271,22 @@ SizedBox(
     );
   }
 
-  // Helper function to build input fields
-  Widget _buildInputField({required String label, required bool obscureText}) {
+  // 🔹 Reusable Input Field
+  Widget _buildTextField(String label, TextEditingController controller, bool obscure) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-        border:
-            Border(bottom: BorderSide(color: Colors.white.withOpacity(0.5))),
+        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.6))),
       ),
       child: TextField(
-        obscureText: obscureText,
+        controller: controller,
+        obscureText: obscure,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+          labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           border: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          hintStyle: TextStyle(color: Colors.white),
         ),
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
     );
   }
