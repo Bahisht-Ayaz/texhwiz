@@ -150,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                 _buildFeatureCard(context, Icons.star_rate, "Rate Us",
                     "Give rating", Rateus(), Colors.amber),
                 _buildFeatureCard(context, Icons.support_agent, "Contact Us",
-                    "We are here to help",  Contactus(), Colors.indigo),
+                    "We are here to help", ShelterDashboard(), Colors.indigo),
               ],
             ),
           ),
@@ -163,13 +163,14 @@ class _HomePageState extends State<HomePage> {
   Widget _buildSettingsPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Settings"),
+        title: const Text("Settings", style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
       ),
       body: Center(
         child: ElevatedButton.icon(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.blue,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
           onPressed: () async {

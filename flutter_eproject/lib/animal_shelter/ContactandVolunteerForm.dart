@@ -87,7 +87,12 @@ class _ContactVolunteerPageState extends State<ContactVolunteerPage>
       maxLines: multiline ? 4 : 1,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        labelStyle: const TextStyle(color: Colors.blue),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       ),
@@ -105,7 +110,13 @@ class _ContactVolunteerPageState extends State<ContactVolunteerPage>
         const SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red, foregroundColor: Colors.white),
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+          ),
           onPressed: () => _submitForm("Contact"),
           child: const Text("Submit"),
         ),
@@ -125,7 +136,8 @@ class _ContactVolunteerPageState extends State<ContactVolunteerPage>
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
             labelText: "Availability",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            labelStyle: const TextStyle(color: Colors.blue),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           value: availability,
           items: const [
@@ -139,7 +151,13 @@ class _ContactVolunteerPageState extends State<ContactVolunteerPage>
         const SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red, foregroundColor: Colors.white),
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+          ),
           onPressed: () => _submitForm("Volunteer"),
           child: const Text("Submit"),
         ),
@@ -157,7 +175,8 @@ class _ContactVolunteerPageState extends State<ContactVolunteerPage>
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
             labelText: "Donation Type",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            labelStyle: const TextStyle(color: Colors.blue),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           value: donationType,
           items: const [
@@ -174,7 +193,13 @@ class _ContactVolunteerPageState extends State<ContactVolunteerPage>
         const SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red, foregroundColor: Colors.white),
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+          ),
           onPressed: () => _submitForm("Donation"),
           child: const Text("Submit"),
         ),
@@ -185,11 +210,18 @@ class _ContactVolunteerPageState extends State<ContactVolunteerPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100], // Soft background
       appBar: AppBar(
         title: const Text("Contact & Volunteer"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 4,
         bottom: TabBar(
           controller: _tabController,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
           tabs: const [
             Tab(text: "Contact"),
             Tab(text: "Volunteer"),

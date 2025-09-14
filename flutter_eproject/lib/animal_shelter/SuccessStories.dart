@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 // import 'package:uuid/uuid.dart';
 
-
 class SuccessStories extends StatefulWidget {
   const SuccessStories({Key? key}) : super(key: key);
 
@@ -33,18 +32,10 @@ class _SuccessStoriesState extends State<SuccessStories> {
   Future<void> _submitStory() async {
     if (_formKey.currentState!.validate() != null) {
       try {
-        // 🔹 Upload image to Firebase Storage
-        // String fileId = const Uuid().v4();
-        // final ref = FirebaseStorage.instance.ref().child("stories/$fileId.jpg");
-        // await ref.putFile(_image!);
-        // String imageUrl = await ref.getDownloadURL();
-
-        // 🔹 Save story in Firestore
         await FirebaseFirestore.instance.collection("successStories").add({
           "petName": petNameCtrl.text,
           "adopterName": adopterNameCtrl.text,
           "story": storyCtrl.text,
-          // "imageUrl": imageUrl,
           "createdAt": FieldValue.serverTimestamp(),
         });
 
@@ -52,7 +43,6 @@ class _SuccessStoriesState extends State<SuccessStories> {
           const SnackBar(content: Text("✅ Story submitted successfully!")),
         );
 
-        // Clear form
         petNameCtrl.clear();
         adopterNameCtrl.clear();
         storyCtrl.clear();
@@ -77,7 +67,12 @@ class _SuccessStoriesState extends State<SuccessStories> {
       maxLines: multiline ? 3 : 1,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        labelStyle: const TextStyle(color: Colors.blue),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       ),
@@ -87,9 +82,13 @@ class _SuccessStoriesState extends State<SuccessStories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100], // Light background
       appBar: AppBar(
         title: const Text("Success Stories"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -105,32 +104,70 @@ class _SuccessStoriesState extends State<SuccessStories> {
                   const SizedBox(height: 12),
                   _buildTextField("Short Story", storyCtrl, multiline: true),
                   const SizedBox(height: 12),
+
+                  // Image Preview
                   _image != null
-                      ? Image.file(_image!, height: 120)
-                      : const Text("No image selected"),
-                  const SizedBox(height: 8),
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_image!, height: 150, fit: BoxFit.cover),
+                        )
+                      : const Text("📷 No image selected",
+                          style: TextStyle(color: Colors.grey)),
+
+                  const SizedBox(height: 12),
+
+                  // Upload Button
                   ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
                     icon: const Icon(Icons.photo),
                     label: const Text("Upload Photo"),
                     onPressed: _pickImage,
                   ),
+
                   const SizedBox(height: 20),
+
+                  // Submit Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white),
+                      backgroundColor: Colors.blue[700],
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+                      textStyle: const TextStyle(fontSize: 16),
+                    ),
                     onPressed: _submitStory,
                     child: const Text("Submit Story"),
                   ),
                 ],
               ),
             ),
-            const Divider(height: 30),
-            const Text(
-              "🐾 Gallery of Happy Adoptions",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            const Divider(height: 40, thickness: 1),
+
+            // Gallery Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.pets, color: Colors.blue),
+                SizedBox(width: 6),
+                Text(
+                  "Gallery of Happy Adoptions",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.blue),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
 
             // 🔹 Live list from Firestore
             StreamBuilder<QuerySnapshot>(
@@ -151,27 +188,41 @@ class _SuccessStoriesState extends State<SuccessStories> {
                   itemBuilder: (context, index) {
                     final story = docs[index].data() as Map<String, dynamic>;
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                      elevation: 3,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (story['imageUrl'] != null)
-                            Image.network(story['imageUrl'],
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(15)),
+                              child: Image.network(
+                                story['imageUrl'],
                                 height: 180,
                                 width: double.infinity,
-                                fit: BoxFit.cover),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           Padding(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(14),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "🐶 ${story['petName']} adopted by ${story['adopterName']}",
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue),
                                 ),
                                 const SizedBox(height: 6),
-                                Text(story['story']),
+                                Text(
+                                  story['story'],
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.black87),
+                                ),
                               ],
                             ),
                           ),
