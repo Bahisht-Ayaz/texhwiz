@@ -137,6 +137,7 @@ class _BlogTipsPageState extends State<BlogTipsPage> {
       appBar: AppBar(
         title: const Text('Explore Blogs & Tips', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(

@@ -47,8 +47,8 @@ class _PetHealthPageState extends State<PetHealthPage> {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text("🐾 Pet Health Records"),
-        centerTitle: true,
+        title: const Text("Pet Health Records"),
+        foregroundColor: Colors.white
       ),
       body: Column(
         children: [

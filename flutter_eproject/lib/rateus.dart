@@ -116,7 +116,7 @@ class _RateUsPageState extends State<RateUsPage>
                     Icon(
                       Icons.star_rounded,
                       size: 110,
-                      color: const Color(0xFF1E88E5),
+                      color: Colors.yellow
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -146,17 +146,18 @@ class _RateUsPageState extends State<RateUsPage>
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 30),
+                    // ⭐⭐⭐⭐⭐ Stars without gaps
                     RatingBar.builder(
                       initialRating: _rating,
                       minRating: 1,
                       direction: Axis.horizontal,
                       itemCount: 5,
-                      itemSize: 45,
-                      itemPadding: const EdgeInsets.symmetric(horizontal: 6),
+                      itemSize: 50, // stars thode bade kar diye
+                      itemPadding: EdgeInsets.zero, // 👈 gap remove kar diya
                       unratedColor: Colors.grey[300],
                       itemBuilder: (context, _) => const Icon(
                         Icons.star_rounded,
-                        color: Color.fromARGB(255, 58, 211, 28),
+                        color: Colors.yellow,
                       ),
                       onRatingUpdate: (rating) {
                         setState(() {
@@ -228,18 +229,10 @@ class ThankYouPage extends StatelessWidget {
     return Scaffold(
       // Gradient AppBar
       appBar: AppBar(
-        title: const Text(
-          "Thank You",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
+      
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+           color: Colors.lightBlue
           ),
         ),
         elevation: 2,

@@ -1,158 +1,135 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_eproject/petownwer/petform.dart'; // 👈 form page ka import
 
-class PetProfilesPage extends StatefulWidget {
-  const PetProfilesPage({super.key});
+class PetListPage extends StatefulWidget {
+  const PetListPage({super.key});
 
   @override
-  State<PetProfilesPage> createState() => _PetProfilesPageState();
+  State<PetListPage> createState() => _PetListPageState();
 }
 
-class _PetProfilesPageState extends State<PetProfilesPage> {
-  File? _image;
+class _PetListPageState extends State<PetListPage> {
+  final petsRef = FirebaseFirestore.instance.collection("pets");
 
-  Future<void> _pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => _image = File(picked.path));
-    }
+  // 🔹 Delete Pet
+  Future<void> _deletePet(String id) async {
+    await petsRef.doc(id).delete();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Pet deleted")),
+    );
   }
 
-  Future<String?> _uploadImage(File file) async {
-    try {
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child("pet_photos")
-          .child("${DateTime.now().millisecondsSinceEpoch}.jpg");
-      await ref.putFile(file);
-      return await ref.getDownloadURL();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  void _showPetForm({DocumentSnapshot? doc}) {
-    final data = doc?.data() as Map<String, dynamic>? ?? {};
-    final nameC = TextEditingController(text: data["name"]);
-    final ageC = TextEditingController(text: data["age"]?.toString() ?? "");
-    final breedC = TextEditingController(text: data["breed"]);
-    final speciesC = TextEditingController(text: data["species"]);
-    final genderC = TextEditingController(text: data["gender"]);
-    final healthC = TextEditingController(text: data["healthStatus"]);
-
-    _image = null;
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(doc == null ? "Add Pet" : "Edit Pet"),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundImage:
-                      _image != null ? FileImage(_image!) : null,
-                  child: _image == null
-                      ? const Icon(Icons.add_a_photo, size: 30)
-                      : null,
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(controller: nameC, decoration: const InputDecoration(labelText: "Name")),
-              TextField(controller: ageC, decoration: const InputDecoration(labelText: "Age"), keyboardType: TextInputType.number),
-              TextField(controller: breedC, decoration: const InputDecoration(labelText: "Breed")),
-              TextField(controller: speciesC, decoration: const InputDecoration(labelText: "Species")),
-              TextField(controller: genderC, decoration: const InputDecoration(labelText: "Gender")),
-              TextField(controller: healthC, decoration: const InputDecoration(labelText: "Health Status")),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-          ElevatedButton(
-            onPressed: () async {
-              String? photoUrl = data["photoUrl"];
-              if (_image != null) {
-                photoUrl = await _uploadImage(_image!);
-              }
-
-              final petData = {
-                "userId": FirebaseAuth.instance.currentUser!.uid,
-                "name": nameC.text,
-                "age": int.tryParse(ageC.text) ?? 0,
-                "breed": breedC.text,
-                "species": speciesC.text,
-                "gender": genderC.text,
-                "photoUrl": photoUrl,
-                "healthStatus": healthC.text,
-                "createdAt": FieldValue.serverTimestamp(),
-              };
-
-              if (doc == null) {
-                await FirebaseFirestore.instance.collection("pets").add(petData);
-              } else {
-                await FirebaseFirestore.instance.collection("pets").doc(doc.id).update(petData);
-              }
-
-              Navigator.pop(context);
-            },
-            child: Text(doc == null ? "Save" : "Update"),
-          ),
-        ],
+  // 🔹 Edit Pet (Navigate to form with existing data)
+  void _editPet(DocumentSnapshot doc) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PetProfileFormPage(petDoc: doc), // 👈 send doc for editing
       ),
     );
   }
 
-  Future<void> _deletePet(String id) async {
-    await FirebaseFirestore.instance.collection("pets").doc(id).delete();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-
     return Scaffold(
-      appBar: AppBar(title: const Text("My Pets"), backgroundColor: Colors.teal),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection("pets")
-            .where("userId", isEqualTo: uid)
-            .orderBy("createdAt", descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+      appBar: AppBar(
+        title: const Text("My Pets"),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
 
-          final docs = snapshot.data!.docs;
-          if (docs.isEmpty) return const Center(child: Text("No pets added yet"));
+      // 🔹 FAB to add new pet
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PetProfileFormPage()), // 👈 add mode
+          );
+        },
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+
+      body: StreamBuilder<QuerySnapshot>(
+        stream: petsRef.orderBy("createdAt", descending: true).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.blue),
+            );
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("No pets found!"));
+          }
+
+          final pets = snapshot.data!.docs;
 
           return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, i) {
-              final pet = docs[i].data() as Map<String, dynamic>;
+            padding: const EdgeInsets.all(12),
+            itemCount: pets.length,
+            itemBuilder: (context, index) {
+              final doc = pets[index];
+              final data = doc.data() as Map<String, dynamic>;
+
               return Card(
-                margin: const EdgeInsets.all(8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                elevation: 4,
                 child: ListTile(
-                  leading: pet["photoUrl"] != null
-                      ? CircleAvatar(backgroundImage: NetworkImage(pet["photoUrl"]))
-                      : const CircleAvatar(child: Icon(Icons.pets)),
-                  title: Text("${pet["name"]} (${pet["species"]})"),
-                  subtitle: Text("Breed: ${pet["breed"]}\nAge: ${pet["age"]}\nHealth: ${pet["healthStatus"]}"),
+                  leading: CircleAvatar(
+                    radius: 28,
+                    backgroundImage: data["photoUrl"] != null
+                        ? NetworkImage(data["photoUrl"])
+                        : null,
+                    backgroundColor: Colors.blue.shade100,
+                    child: data["photoUrl"] == null
+                        ? const Icon(Icons.pets, color: Colors.blue)
+                        : null,
+                  ),
+                  title: Text(
+                    data["name"] ?? "Unknown",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    "Breed: ${data["breed"] ?? "N/A"}\n"
+                    "Age: ${data["age"] ?? "N/A"} yrs\n"
+                    "Health: ${data["healthStatus"] ?? "N/A"}",
+                  ),
                   isThreeLine: true,
+
+                  // 🔹 CRUD Buttons
                   trailing: PopupMenuButton<String>(
-                    onSelected: (val) {
-                      if (val == "Edit") _showPetForm(doc: docs[i]);
-                      if (val == "Delete") _deletePet(docs[i].id);
+                    onSelected: (value) {
+                      if (value == "edit") {
+                        _editPet(doc); // 👈 open edit form
+                      } else if (value == "delete") {
+                        _deletePet(doc.id);
+                      }
                     },
-                    itemBuilder: (_) => [
-                      const PopupMenuItem(value: "Edit", child: Text("Edit")),
-                      const PopupMenuItem(value: "Delete", child: Text("Delete")),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: "edit",
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, color: Colors.blue),
+                            SizedBox(width: 8),
+                            Text("Edit"),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: "delete",
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text("Delete"),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -160,10 +137,6 @@ class _PetProfilesPageState extends State<PetProfilesPage> {
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showPetForm(),
-        child: const Icon(Icons.add),
       ),
     );
   }

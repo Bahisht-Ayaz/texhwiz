@@ -174,6 +174,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
         title: const Text("Appointments",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
       ),
       body: Container(
         color: Colors.blue[50],

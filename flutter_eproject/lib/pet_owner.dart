@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_eproject/Veterinarian/veterinariandashboard.dart';
 import 'package:flutter_eproject/animal_shelter/shelter.dart';
 
 // Import your pages
-import 'petownwer/petprofile.dart';
+// import 'petownwer/petprofile.dart';  // ❌ My Pets ka page hata diya
 import 'petownwer/HealthTracking.dart';
 import 'petownwer/appoinments.dart';
 import 'petownwer/petstore.dart';
@@ -35,7 +36,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
       _buildHomePage(context),
-      const PetProfilesPage(),
       _buildSettingsPage(context),
     ];
 
@@ -54,7 +54,6 @@ class _HomePageState extends State<HomePage> {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.pets), label: "My Pets"),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
         ],
       ),
@@ -84,7 +83,10 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(width: 10),
                 Text(
                   "Hi, ${currentUser?.displayName ?? "Pet Lover"} 👋",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white),
                 ),
               ],
             ),
@@ -135,8 +137,6 @@ class _HomePageState extends State<HomePage> {
               crossAxisSpacing: 12,
               childAspectRatio: 1.1,
               children: [
-                _buildFeatureCard(context, Icons.pets, "Pet Profile",
-                    "Manage your pets", const PetProfilesPage(), Colors.orange),
                 _buildFeatureCard(context, Icons.monitor_heart,
                     "Health Tracking", "Track pet health", PetHealthPage(petId: "abc123"), Colors.red),
                 _buildFeatureCard(context, Icons.calendar_month, "Appointments",
@@ -150,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                 _buildFeatureCard(context, Icons.star_rate, "Rate Us",
                     "Give rating", Rateus(), Colors.amber),
                 _buildFeatureCard(context, Icons.support_agent, "Contact Us",
-                    "We are here to help", ShelterDashboard(), Colors.indigo),
+                    "We are here to help", Contactus(), Colors.indigo),
               ],
             ),
           ),
@@ -163,7 +163,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildSettingsPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Settings", style: TextStyle(color: Colors.white),),
+        title: const Text("Settings", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),

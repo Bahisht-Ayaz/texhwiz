@@ -41,7 +41,7 @@ class _PetStorePageState extends State<PetStorePage> {
         title: const Text("Pet Store",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.blueAccent,
-        centerTitle: true,
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: Column(

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_eproject/pet_owner.dart';
 import 'package:flutter_eproject/login.dart';
 import 'firebase_options.dart';
 
@@ -24,8 +23,8 @@ class Signin extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'PetShelter',
       theme: ThemeData(
-        primaryColor: Color(0xFFE6E6FA), // Lavender
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+        primaryColor: const Color(0xFFE6E6FA),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Sign Up'),
@@ -73,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (auth.currentUser != null) {
         await auth.currentUser?.sendEmailVerification();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("User Registered Successfully"),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
@@ -87,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
           content: Text("$e"),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -102,12 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // 🌸 Background Gradient (Lavender + Purple)
+          // 🌸 Background Gradient
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.white, // Lavender
+                  Colors.white,
                   Colors.blue,
                   Colors.blue,
                 ],
@@ -133,9 +132,16 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(screenWidth * 0.08),
               width: screenWidth * 0.9,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+                color: Colors.white.withOpacity(0.25),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -155,44 +161,41 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(height: screenHeight * 0.03),
 
-                    // 🔹 Name
-                    _buildTextField("Name", a, false),
+                    // 🔹 Input Fields
+                    _buildTextField(Icons.person, "Full Name", a, false),
                     SizedBox(height: screenHeight * 0.02),
-
-                    // 🔹 Email
-                    _buildTextField("Email", b, false),
+                    _buildTextField(Icons.email, "Email Address", b, false),
                     SizedBox(height: screenHeight * 0.02),
-
-                    // 🔹 Password
-                    _buildTextField("Password", c, true),
+                    _buildTextField(Icons.lock, "Password", c, true),
                     SizedBox(height: screenHeight * 0.02),
-
-                    // 🔹 Gender
-                    _buildTextField("Gender", d, false),
+                    _buildTextField(Icons.people, "Gender", d, false),
                     SizedBox(height: screenHeight * 0.02),
-
-                    // 🔹 Contact
-                    _buildTextField("Contact no", e, false),
+                    _buildTextField(Icons.phone, "Contact Number", e, false),
                     SizedBox(height: screenHeight * 0.02),
 
                     // 🔹 Dropdown Role
                     DropdownButtonFormField<String>(
                       value: selectedRole,
-                      dropdownColor: Colors.deepPurple.shade200,
+                      dropdownColor: Colors.white,
                       decoration: InputDecoration(
-                        labelText: "Select Role",
-                        labelStyle: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                        filled: true,
+                        fillColor: Colors.white,
+                        prefixIcon: const Icon(Icons.group, color: Colors.blue),
+                        hintText: "Select Role",
+                        hintStyle: TextStyle(color: Colors.grey.shade600),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.blue),
                         ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white70),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.blue, width: 2),
                         ),
                       ),
                       items: ["Pet Owner", "Veterinarian", "Shelter Admin"].map((role) {
                         return DropdownMenuItem(
                           value: role,
-                          child: Text(role, style: TextStyle(color: Colors.white)),
+                          child: Text(role, style: const TextStyle(color: Colors.black)),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -213,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           vertical: 15,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 5,
                       ),
@@ -232,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Already have an account?",
+                        const Text("Already have an account?",
                             style: TextStyle(color: Colors.white70)),
                         TextButton(
                           onPressed: () {
@@ -241,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               MaterialPageRoute(builder: (context) => login()),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             "Login",
                             style: TextStyle(
                               color: Colors.white,
@@ -261,21 +264,28 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, bool obscure) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 5),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.6))),
-      ),
-      child: TextField(
-        controller: controller,
-        obscureText: obscure,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          border: InputBorder.none,
+  // 🔹 Modern reusable input field
+  Widget _buildTextField(
+      IconData icon, String hint, TextEditingController controller, bool obscure) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      style: const TextStyle(color: Colors.black),
+      cursorColor: Colors.blue,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        prefixIcon: Icon(icon, color: Colors.blue),
+        hintText: hint, // 👈 Professional placeholder
+        hintStyle: TextStyle(color: Colors.grey.shade600),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.blue, width: 1),
         ),
-        style: TextStyle(color: Colors.white),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
       ),
     );
   }

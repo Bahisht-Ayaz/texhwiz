@@ -23,8 +23,11 @@ class Feedbacks extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.blue[50],
+        
       ),
+      
       home: const MyHomePage(title: 'Feedback Form'),
+      
     );
   }
 }
