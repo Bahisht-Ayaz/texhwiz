@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_eproject/Veterinarian/veterinariandashboard.dart';
 import 'package:flutter_eproject/animal_shelter/shelter.dart';
+import 'package:flutter_eproject/petownwer/petprofile.dart';
 
 // Import your pages
 // import 'petownwer/petprofile.dart';  // ❌ My Pets ka page hata diya
@@ -137,6 +138,8 @@ class _HomePageState extends State<HomePage> {
               crossAxisSpacing: 12,
               childAspectRatio: 1.1,
               children: [
+                 _buildFeatureCard(context, Icons.person, "Pet Profile",
+                    "Pet profile", PetListPage(), const Color.fromARGB(255, 181, 96, 63)),
                 _buildFeatureCard(context, Icons.monitor_heart,
                     "Health Tracking", "Track pet health", PetHealthPage(petId: "abc123"), Colors.red),
                 _buildFeatureCard(context, Icons.calendar_month, "Appointments",
@@ -151,6 +154,7 @@ class _HomePageState extends State<HomePage> {
                     "Give rating", Rateus(), Colors.amber),
                 _buildFeatureCard(context, Icons.support_agent, "Contact Us",
                     "We are here to help", Contactus(), Colors.indigo),
+                   
               ],
             ),
           ),
