@@ -159,10 +159,10 @@ class _AppointmentsCalendarPageState extends State<AppointmentsCalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("📅 Appointments Calendar"),
-        backgroundColor: Colors.white,
-      ),
+      // appBar: AppBar(
+      //   title: Text("📅 Appointments Calendar"),
+      //   backgroundColor: Colors.white,
+      // ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

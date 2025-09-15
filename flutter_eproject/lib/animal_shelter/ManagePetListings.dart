@@ -78,13 +78,13 @@ class _ManagePetListingsState extends State<ManagePetListings> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100], // light background
-      appBar: AppBar(
-        title: Text('🐾 Manage Pet Listings',style: TextStyle(color: Colors.white),),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        elevation: 4,
-      ),
+      // appBar: AppBar(
+      //   title: Text('🐾 Manage Pet Listings',style: TextStyle(color: Colors.white),),
+      //   centerTitle: true,
+      //   backgroundColor: Colors.blue,
+      //   foregroundColor: Colors.white,
+      //   elevation: 4,
+      // ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

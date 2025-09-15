@@ -69,11 +69,11 @@ class _ManageAdoptionRequestsState extends State<ManageAdoptionRequests> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Manage Adoption Requests',style: TextStyle(color: Colors.white),),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-      ),
+      // appBar: AppBar(
+      //   title: Text('Manage Adoption Requests',style: TextStyle(color: Colors.white),),
+      //   backgroundColor: Colors.blue,
+      //   foregroundColor: Colors.white,
+      // ),
       body: ListView.builder(
         itemCount: _requests.length,
         itemBuilder: (context, index) {

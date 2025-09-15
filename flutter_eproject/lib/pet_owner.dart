@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                 _buildFeatureCard(context, Icons.star_rate, "Rate Us",
                     "Give rating", Rateus(), Colors.amber),
                 _buildFeatureCard(context, Icons.support_agent, "Contact Us",
-                    "We are here to help", Contactus(), Colors.indigo),
+                    "We are here to help", Veterinariandashboard(), Colors.indigo),
                    
               ],
             ),

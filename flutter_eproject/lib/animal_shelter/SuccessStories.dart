@@ -83,13 +83,13 @@ class _SuccessStoriesState extends State<SuccessStories> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100], // Light background
-      appBar: AppBar(
-        title: const Text("Success Stories"),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        elevation: 4,
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Success Stories"),
+      //   backgroundColor: Colors.blue,
+      //   foregroundColor: Colors.white,
+      //   elevation: 4,
+      //   centerTitle: true,
+      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

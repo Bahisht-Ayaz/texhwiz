@@ -127,10 +127,10 @@ class _MedicalRecordsPageState extends State<MedicalRecordsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("🐾 Medical Records"),
-        backgroundColor: Colors.white,
-      ),
+      // appBar: AppBar(
+      //   title: Text("🐾 Medical Records"),
+      //   backgroundColor: Colors.white,
+      // ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

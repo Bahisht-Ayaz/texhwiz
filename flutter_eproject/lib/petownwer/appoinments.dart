@@ -33,17 +33,21 @@ class _AppointmentPageState extends State<AppointmentPage> {
         "createdAt": FieldValue.serverTimestamp(),
       });
 
+      // ✅ Close the dialog
+      Navigator.of(context).pop();
+
+      // ✅ Show success message on main screen
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("✅ Appointment booked")),
       );
 
+      // ✅ Reset state
       _reasonC.clear();
       setState(() {
         _selectedDate = null;
         _selectedPet = null;
         _selectedVet = null;
       });
-      Navigator.pop(context);
     } catch (e) {
       print("❌ Error booking appointment: $e");
     }
