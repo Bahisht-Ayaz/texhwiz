@@ -61,13 +61,14 @@ class _MyHomePageState extends State<MyHomePage> {
         password: c.text,
       );
 
-      await db.collection("User").add({
-        "Name": a.text,
-        "Email": b.text,
-        "Gender": d.text,
-        "Contactno": e.text,
-        "Role": selectedRole,
-      });
+      await db.collection("User").doc(user.user!.uid).set({
+  "Name": a.text,
+  "Email": b.text,
+  "Gender": d.text,
+  "Contactno": e.text,
+  "Role": selectedRole,
+});
+
 
       if (auth.currentUser != null) {
         await auth.currentUser?.sendEmailVerification();

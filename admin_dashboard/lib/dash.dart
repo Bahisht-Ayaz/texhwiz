@@ -4,6 +4,40 @@ import 'package:admin_dashboard/user.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+class PetOwnerDashboard extends StatelessWidget {
+  const PetOwnerDashboard({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pet Owner Dashboard')),
+      body: const Center(child: Text('Welcome, Pet Owner!')),
+    );
+  }
+}
+
+class VetDashboard extends StatelessWidget {
+  const VetDashboard({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Veterinarian Dashboard')),
+      body: const Center(child: Text('Welcome, Veterinarian!')),
+    );
+  }
+}
+
+class ShelterAdminDashboard extends StatelessWidget {
+  const ShelterAdminDashboard({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Shelter Admin Dashboard')),
+      body: const Center(child: Text('Welcome, Shelter Admin!')),
+    );
+  }
+}
+
+
 
 class Dash extends StatefulWidget {
   const Dash({super.key});

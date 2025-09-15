@@ -60,10 +60,10 @@ class _ShelterDashboardState extends State<ShelterDashboard> {
                 onPressed: () {
                   Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => login()),
             );
                 },
-                icon: Icon(Icons.pets, color: Colors.blue,))),
+                icon: Icon(Icons.logout, color: Colors.blue,))),
           ),
         ],
       ),

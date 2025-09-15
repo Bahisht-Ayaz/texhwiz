@@ -1,7 +1,10 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_eproject/Signin.dart';
+import 'package:flutter_eproject/Veterinarian/veterinariandashboard.dart';
+import 'package:flutter_eproject/animal_shelter/shelter.dart';
 import 'package:flutter_eproject/pet_owner.dart';
 import 'package:flutter_eproject/forgotpassword.dart';
 import 'package:flutter_eproject/pet_owner.dart';
@@ -69,25 +72,56 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // 🔹 Email/Password Login
   void login_func() async {
-    try {
-      await auth.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
+  try {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    FirebaseFirestore db = FirebaseFirestore.instance;
 
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (a) => HomePage()));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("$e"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+    UserCredential userCredential = await auth.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text,
+    );
+
+    // ✅ User email ke basis pe fetch karo
+    QuerySnapshot snapshot = await db
+        .collection("User")
+        .where("Email", isEqualTo: emailController.text.trim())
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isEmpty) {
+      throw Exception("User data not found!");
     }
+
+    var userDoc = snapshot.docs.first;
+    String role = userDoc['Role'];
+
+    // ✅ Redirect to correct dashboard
+    if (role == "Pet Owner") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else if (role == "Veterinarian") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Veterinariandashboard()),
+      );
+    } else if (role == "Shelter Admin") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ShelterDashboard()),
+      );
+    } else {
+      throw Exception("Unknown user role!");
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("$e"), backgroundColor: Colors.red),
+    );
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {

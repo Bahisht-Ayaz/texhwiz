@@ -13,8 +13,11 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Users Login",style: TextStyle(color: Colors.white),),
+      appBar: AppBar(
+        title: Text(
+          "Users Login",
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -25,7 +28,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           },
         ),
         backgroundColor: const Color(0xFF1E88E5),
-centerTitle: true,
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('User').snapshots(),
@@ -76,7 +79,7 @@ centerTitle: true,
                           color: Colors.black,
                         ),
                       ),
-                        SizedBox(height: 8.0),
+                      SizedBox(height: 8.0),
                       Text(
                         "Gender: ${user['Gender']}",
                         style: TextStyle(
@@ -84,11 +87,20 @@ centerTitle: true,
                           color: Colors.black,
                         ),
                       ),
-                        SizedBox(height: 8.0),
+                      SizedBox(height: 8.0),
                       Text(
-                        "Contactno: ${user['Contactno']}",
+                        "Contact No: ${user['Contactno']}",
                         style: TextStyle(
                           fontSize: 16.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      Text(
+                        "Role: ${user['Role']}",  // 👈 Yahan role show ho jayega
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w600,
                           color: Colors.black,
                         ),
                       ),
